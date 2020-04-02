@@ -10,7 +10,7 @@
     dest: /data/ansible-docker/wordpress/docker-compose.yml
 
 - name: Pull and deploy compose stack
-  become: yes
+  become: true
   docker_compose:
     project_src: "/data/ansible-docker/wordpress/"
     build: yes
