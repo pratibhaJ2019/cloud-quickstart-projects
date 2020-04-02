@@ -12,7 +12,7 @@
 - name: Pull and deploy compose stack
   become: true
   docker_compose:
-    project_src: /data/ansible-docker/wordpress/
+    project_src: ~/ansible-docker/wordpress/
     build: yes
     pull: yes
     recreate: always
