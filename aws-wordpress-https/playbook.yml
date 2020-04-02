@@ -7,12 +7,12 @@
     - name: Show kernel version
       command: uname -a
       register: kernelver
-      changed_when: False
+      changed_when: false
     - debug: msg="{{ kernelver.stdout }}"
 
     - name: Hello World
       command: "echo Hello World!"
       register: helloworld
-      changed_when: False
+      changed_when: false
     - debug: msg="{{ helloworld.stdout }}"
 ...
