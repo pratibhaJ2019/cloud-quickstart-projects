@@ -1,10 +1,11 @@
 ---
 - name: Install Docker and Pip
   become: true
-  package:
+  apt:
     name:
       - docker.io
       - python3-pip
+    update_cache: true
     state: present
 
 - name: Install Pips for managing Docker

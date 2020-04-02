@@ -8,9 +8,10 @@
 
 - name: Install useful packages
   become: true
-  package:
+  apt:
     name:
       - fail2ban
+    update_cache: true
     state: present
 
 - name: Reboot box if kernel/libs updated and requested by the system
