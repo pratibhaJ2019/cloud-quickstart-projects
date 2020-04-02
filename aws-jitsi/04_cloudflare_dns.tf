@@ -10,5 +10,5 @@ resource "cloudflare_record" "A" {
   type    = "A"
   ttl     = 60
   proxied = false
-  value   = aws_instance.instance_cloud-quickstart-wp.public_ip
+  value   = aws_instance.instance_cloud-quickstart-jitsi.public_ip
 }

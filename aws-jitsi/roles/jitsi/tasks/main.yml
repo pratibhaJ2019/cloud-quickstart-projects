@@ -1,0 +1,37 @@
+---
+- name: Create directory to hold Jitsi Compose file
+  file:
+    path: "/home/{{ ansible_user }}/ansible-docker/jitsi"
+    state: directory
+
+- name: Create directories to hold Jitsi config
+  file:
+    path: "/home/{{ ansible_user }}/jitsi/{{ item }}"
+    state: directory
+  with_items:
+    - web/letsencrypt
+    - transcripts
+    - prosody
+    - jicofo
+    - jvb
+
+- name: Copy Docker Compose file
+  template:
+    src: docker-compose.yml
+    dest: "/home/{{ ansible_user }}/ansible-docker/jitsi/docker-compose.yml"
+
+- name: Copy .env file for Jitsi config
+  template:
+    src: env
+    dest: "/home/{{ ansible_user }}/ansible-docker/jitsi/.env"
+
+- name: Pull and deploy compose stack
+  become: true
+  docker_compose:
+    project_src: "/home/{{ ansible_user }}/ansible-docker/jitsi"
+    build: yes
+    pull: yes
+    recreate: always
+    remove_orphans: yes
+    restarted: yes
+...
