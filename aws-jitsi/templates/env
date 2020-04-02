@@ -71,7 +71,7 @@ LETSENCRYPT_EMAIL=alex@alexhaydock.co.uk
 ENABLE_AUTH=1
 
 # Enable guest access
-#ENABLE_GUESTS=1
+ENABLE_GUESTS=1
 
 # Select authentication type: internal, jwt or ldap
 AUTH_TYPE=internal
