@@ -1,9 +1,8 @@
 # Lint Ansible playbooks (we need to call all of our top-level playbooks 'playbook.yml')
 ansible-lint:
-  image: alpine:latest
+  image: python:3-alpine
   stage: test
   script:
-    - apk --no-cache add py3-pip
     - python3 -m pip install ansible-lint
     - for i in $(find . -name playbook.yml); do ansible-lint -f "${i}"; done
 
@@ -32,5 +31,6 @@ terraform-lint:
     - curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip
     - unzip tflint.zip
     - rm tflint.zip
-    - chmod +x tflint
-    - for i in $(find . -maxdepth 1 -mindepth 1 -type d -not -name .git); do cd ${i} && ./tflint; done
+    - mv tflint /opt/tflint
+    - chmod +x /opt/tflint
+    - for i in $(find . -maxdepth 1 -mindepth 1 -type d -not -name .git); do cd ${i} && /opt/tflint; done
