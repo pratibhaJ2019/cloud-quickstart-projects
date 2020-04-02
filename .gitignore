@@ -1,0 +1,9 @@
+# Terraform dir
+.terraform/
+
+# Terraform state
+*.tfstate*
+
+# Don't accidentally upload SSH keys while messing about
+id_*
+*.pub

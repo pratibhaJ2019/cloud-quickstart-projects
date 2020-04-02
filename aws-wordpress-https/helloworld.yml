@@ -1,0 +1,18 @@
+---
+- hosts: all
+  name: Ansible Hello World (for quick testing)
+  gather_facts: true
+
+  tasks:
+    - name: Show kernel version
+      command: uname -a
+      register: kernelver
+      changed_when: False
+    - debug: msg="{{ kernelver.stdout }}"
+
+    - name: Hello World
+      command: "echo Hello World!"
+      register: helloworld
+      changed_when: False
+    - debug: msg="{{ helloworld.stdout }}"
+...
