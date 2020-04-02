@@ -8,7 +8,7 @@ resource "cloudflare_record" "A" {
   zone_id = var.cloudflare_zone_id
   name    = var.DESIRED_HOSTNAME
   type    = "A"
-  ttl     = 60
+  ttl     = 120
   proxied = false
   value   = aws_instance.instance_cloud-quickstart-jitsi.public_ip
 }
