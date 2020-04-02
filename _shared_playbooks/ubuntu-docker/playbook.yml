@@ -2,6 +2,8 @@
 - hosts: all
   name: Docker on Ubuntu
   gather_facts: true
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
 
   pre_tasks:
     - name: Show kernel version
