@@ -1,0 +1,36 @@
+# Lint Ansible playbooks (we need to call all of our top-level playbooks 'playbook.yml')
+ansible-lint:
+  image: alpine:latest
+  stage: test
+  script:
+    - apk --no-cache add py3-pip
+    - python3 -m pip install ansible-lint
+    - for i in $(find . -name playbook.yml); do ansible-lint -f "${i}"; done
+
+# Lint all Dockerfiles in this repo (any Dockerfile, recursively)
+docker-lint:
+  image: projectatomic/dockerfile-lint
+  stage: test
+  script:
+    - for i in $(find . -name Dockerfile); do dockerfile_lint -f "${i}"; done
+
+# Lint all YAML files in this repo (any yaml file, recursively)
+yaml-lint:
+  image: alpine:latest
+  stage: test
+  script:
+    - apk --no-cache add py3-pip
+    - python3 -m pip install yamllint
+    - for i in $(find . -name "*.yml" -or -name "*.yaml"); do yamllint "${i}"; done
+
+# Lint Terraform files inside top-level directories in this repo
+terraform-lint:
+  image: alpine:latest
+  stage: test
+  script:
+    - apk --no-cache add curl unzip
+    - curl -L "$(curl -Ls https://api.github.com/repos/terraform-linters/tflint/releases/latest | grep -o -E "https://.+?_linux_amd64.zip")" -o tflint.zip
+    - unzip tflint.zip
+    - rm tflint.zip
+    - chmod +x tflint
+    - for i in $(find . -maxdepth 1 -mindepth 1 -type d -not -name .git); do cd ${i} && ./tflint; done
