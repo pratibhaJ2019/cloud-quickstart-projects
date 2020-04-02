@@ -1,18 +1,18 @@
 ---
 - name: Create directory to hold Docker Compose file
   file:
-    path: ~/ansible-docker/wordpress
+    path: "/home/{{ ansible_user }}/ansible-docker/wordpress"
     state: directory
 
 - name: Copy Docker Compose file
   template:
     src: docker-compose.yml
-    dest: ~/ansible-docker/wordpress/docker-compose.yml
+    dest: "/home/{{ ansible_user }}/ansible-docker/wordpress/docker-compose.yml"
 
 - name: Pull and deploy compose stack
   become: true
   docker_compose:
-    project_src: ~/ansible-docker/wordpress/
+    project_src: "/home/{{ ansible_user }}/ansible-docker/wordpress"
     build: yes
     pull: yes
     recreate: always
