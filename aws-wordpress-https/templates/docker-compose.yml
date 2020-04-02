@@ -72,6 +72,10 @@ services:
     networks:
       - webserver-net
 
+volumes:
+  wordpress-db:
+  wordpress-web:
+
 networks:
   webserver-net:
     name: webserver_network
