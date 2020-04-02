@@ -1,6 +1,6 @@
 # Lint Ansible playbooks (we need to call all of our top-level playbooks 'playbook.yml')
 ansible-lint:
-  image: python:3-alpine
+  image: python:3
   stage: test
   script:
     - python3 -m pip install ansible-lint
