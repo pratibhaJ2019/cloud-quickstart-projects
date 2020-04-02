@@ -34,4 +34,4 @@ terraform-lint:
     - rm tflint.zip
     - mv tflint /opt/tflint
     - chmod +x /opt/tflint
-    - for i in $(find . -maxdepth 1 -mindepth 1 -type d -not -name .git); do cd ${i} && /opt/tflint; done
+    - for i in $(find . -maxdepth 1 -mindepth 1 -type d -not -name .git); do (cd ${i} && /opt/tflint); done
