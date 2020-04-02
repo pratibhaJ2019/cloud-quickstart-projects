@@ -13,9 +13,9 @@
   become: true
   docker_compose:
     project_src: "/home/{{ ansible_user }}/ansible-docker/wordpress"
-    build: yes
-    pull: yes
+    build: true
+    pull: true
     recreate: always
-    remove_orphans: yes
-    restarted: yes
+    remove_orphans: true
+    restarted: true
 ...
