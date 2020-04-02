@@ -1,18 +1,10 @@
 ---
 - hosts: all
-  name: Ansible Hello World (for quick testing)
+  name: Wordpress
   gather_facts: true
+  vars:
+    __domain_name: "wp01.darkwebkittens.xyz"
 
-  tasks:
-    - name: Show kernel version
-      command: uname -a
-      register: kernelver
-      changed_when: false
-    - debug: msg="{{ kernelver.stdout }}"
-
-    - name: Hello World
-      command: "echo Hello World!"
-      register: helloworld
-      changed_when: false
-    - debug: msg="{{ helloworld.stdout }}"
+  roles:
+    - wordpress
 ...

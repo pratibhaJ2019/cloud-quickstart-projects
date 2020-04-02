@@ -1,0 +1,17 @@
+---
+- name: Install Docker and Pip
+  become: yes
+  package:
+    name:
+      - docker.io
+      - python3-pip
+    state: present
+
+- name: Install Pips for managing Docker
+  become: yes  
+  pip:
+    name:
+      - docker
+      - docker-compose
+    state: present
+...

@@ -44,7 +44,13 @@ resource "aws_instance" "instance_cloud-quickstart-wp" {
     }
   }
 
+  # Set up the host with a shared playbook
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PUBKEY}' -i '${aws_instance.instance_cloud-quickstart-wp.public_ip},' helloworld.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PUBKEY}' -i '${aws_instance.instance_cloud-quickstart-wp.public_ip},' ../_shared_playbooks/ubuntu-docker/playbook.yml"
+  }
+
+  # Set up with the specific playbook for this host
+  provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PUBKEY}' -i '${aws_instance.instance_cloud-quickstart-wp.public_ip},' playbook.yml"
   }
 }

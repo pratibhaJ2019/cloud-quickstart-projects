@@ -1,0 +1,32 @@
+---
+- name: Update all packages
+  become: yes
+  apt:
+    autoremove: yes
+    update_cache: yes
+    upgrade: full
+
+- name: Install useful packages
+  become: yes
+  package:
+    name:
+      - fail2ban
+    state: present
+
+- name: Reboot box if kernel/libs updated and requested by the system
+  become: yes
+  shell: /sbin/shutdown -r now 'Rebooting box to update system libs/kernel as needed'
+  args:
+    removes: /var/run/reboot-required
+  async: 300
+  poll: 0
+  ignore_errors: true
+  changed_when: false
+  register: rebootafterupdates
+  tags:
+    - skip_ansible_lint
+  
+- name: Wait 600 seconds for target connection to become reachable/usable
+  wait_for_connection:
+  when: rebootafterupdates.changed
+...
