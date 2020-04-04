@@ -37,7 +37,7 @@ resource "aws_instance" "instance_cloud-quickstart-jitsi" {
     inline = ["echo Hello_World"]
 
     connection {
-      host        = aws_instance.instance_cloud-quickstart-jitsi.public_ip
+      host        = self.public_ip
       type        = "ssh"
       user        = var.instance_username
       private_key = file(var.AWS_PRIVKEY)
@@ -46,11 +46,11 @@ resource "aws_instance" "instance_cloud-quickstart-jitsi" {
 
   # Set up the host with a shared playbook
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PUBKEY}' -i '${aws_instance.instance_cloud-quickstart-jitsi.public_ip},' ../_shared_playbooks/ubuntu-docker/playbook.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/ubuntu-docker/playbook.yml"
   }
 
   # Set up with the specific playbook for this host
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PUBKEY}' -i '${aws_instance.instance_cloud-quickstart-jitsi.public_ip},' playbook.yml"
+    command = "sleep 60 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/jitsi/playbook.yml"
   }
 }
