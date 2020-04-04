@@ -1,0 +1,52 @@
+---
+- name: Start nginx-proxy with LetsEncrypt support
+  docker_compose:
+    project_name: proxy
+    # This is basically just an inline docker-compose.yml
+    definition:
+        version: '3.7'
+        services:
+        nginx-proxy:
+          image: jwilder/nginx-proxy:latest
+          container_name: nginx-proxy
+          restart: unless-stopped
+          ports:
+            - "0.0.0.0:80:80/tcp"
+            - "0.0.0.0:443:443/tcp"
+          volumes:
+            - /data/proxy/conf:/etc/nginx/conf.d
+            - /data/proxy/vhost:/etc/nginx/vhost.d
+            - /data/proxy/html:/usr/share/nginx/html
+            - /data/proxy/dhparam:/etc/nginx/dhparam
+            - /data/proxy/certs:/etc/nginx/certs:ro
+            - /var/run/docker.sock:/tmp/docker.sock:ro
+          networks:
+            - webserver-net
+        letsencrypt:
+          depends_on:
+            - nginx-proxy
+          image: jrcs/letsencrypt-nginx-proxy-companion:latest
+          container_name: nginx-proxy-ssl
+          restart: unless-stopped
+          volumes:
+            - /data/proxy/conf:/etc/nginx/conf.d
+            - /data/proxy/vhost:/etc/nginx/vhost.d
+            - /data/proxy/html:/usr/share/nginx/html
+            - /data/proxy/dhparam:/etc/nginx/dhparam
+            - /data/proxy/certs:/etc/nginx/certs:rw
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+          environment:
+            - NGINX_PROXY_CONTAINER=nginx-proxy
+          networks:
+            - webserver-net
+        # We need to make sure all the containers we want the reverse proxy
+        # to be able to talk to are forced onto this same network!
+        networks:
+          webserver-net:
+            name: webserver_network
+    register: output
+
+- name: Print docker-compose output
+    debug:
+      var: output
+...

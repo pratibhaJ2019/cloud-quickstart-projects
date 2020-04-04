@@ -1,21 +1,39 @@
 ---
-- name: Create directory to hold Docker Compose file
-  file:
-    path: "/home/{{ ansible_user }}/ansible-docker/wordpress"
-    state: directory
-
-- name: Copy Docker Compose file
-  template:
-    src: docker-compose.yml
-    dest: "/home/{{ ansible_user }}/ansible-docker/wordpress/docker-compose.yml"
-
-- name: Pull and deploy compose stack
-  become: true
+- name: Start Wordpress
   docker_compose:
-    project_src: "/home/{{ ansible_user }}/ansible-docker/wordpress"
-    build: true
-    pull: true
-    recreate: always
-    remove_orphans: true
-    restarted: true
+    project_name: wp
+    # This is basically just an inline docker-compose.yml
+    definition:
+      version: '3.7'
+      services:
+      wp:
+        image: wordpress:latest
+        container_name: wp
+        restart: unless-stopped
+        environment:
+          - "WORDPRESS_DB_HOST=db"
+          - "WORDPRESS_DB_USER=wordpress"
+          - "WORDPRESS_DB_PASSWORD=wordpress"
+          - "WORDPRESS_DB_NAME=wordpress"
+          - "VIRTUAL_HOST={{ __domain_name }}"
+          - "LETSENCRYPT_HOST={{ __domain_name }}"
+          - "HSTS=max-age=31536000; includeSubDomains; preload"
+          - "SSL_POLICY=Mozilla-Modern"
+          - "ENABLE_IPV6=1"
+        volumes:
+          - /data/wp-web:/var/www/html
+        networks:
+          - webserver-net
+      networks:
+        webserver-net:
+          name: webserver_network
+    register: output
+
+- name: Print docker-compose output
+  debug:
+    var: output
+
+- name: Pause for 3 minutes to allow database to start fully even on a slow system
+  pause:
+    minutes: 3
 ...
