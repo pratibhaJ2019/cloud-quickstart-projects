@@ -58,11 +58,11 @@ resource "google_compute_instance" "default" {
 
   # Set up NGINX reverse proxy
   provisioner "local-exec" {
-    command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/nginx-proxy/playbook.yml"
+    command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/nginx-proxy/playbook.yml"
   }
 
   # Set up Wordpress
   provisioner "local-exec" {
-    command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/wordpress/playbook.yml"
+    command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/wordpress/playbook.yml"
   }
 }
