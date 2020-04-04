@@ -1,11 +1,12 @@
 ---
 - name: Start nginx-proxy with LetsEncrypt support
+  become: true
   docker_compose:
     project_name: proxy
-    # This is basically just an inline docker-compose.yml
     definition:
-        version: '3.7'
-        services:
+      # BEGIN inline docker-compose.yml
+      version: "3.7"
+      services:
         nginx-proxy:
           image: jwilder/nginx-proxy:latest
           container_name: nginx-proxy
@@ -39,14 +40,15 @@
             - NGINX_PROXY_CONTAINER=nginx-proxy
           networks:
             - webserver-net
-        # We need to make sure all the containers we want the reverse proxy
-        # to be able to talk to are forced onto this same network!
-        networks:
-          webserver-net:
-            name: webserver_network
-    register: output
+      # We need to make sure all the containers we want the reverse proxy
+      # to be able to talk to are forced onto this same network!
+      networks:
+        webserver-net:
+          name: webserver_network
+      # END inline docker-compose.yml
+  register: output
 
 - name: Print docker-compose output
-    debug:
-      var: output
+  debug:
+    var: output
 ...

@@ -1,14 +1,15 @@
 ---
 - name: Start MySQL database
+  become: true
   docker_compose:
     project_name: db
-    # This is basically just an inline docker-compose.yml
     definition:
-        version: '3.7'
-        services:
+      # BEGIN inline docker-compose.yml
+      version: "3.7"
+      services:
         db:
           image: mysql:8
-          command: '--default-authentication-plugin=mysql_native_password'
+          command: "--default-authentication-plugin=mysql_native_password"
           container_name: db
           restart: unless-stopped
           environment:
@@ -20,16 +21,17 @@
             - /data/wp-db:/var/lib/mysql
           networks:
             - webserver-net
-        networks:
-          webserver-net:
-              name: webserver_network
-    register: output
+      networks:
+        webserver-net:
+          name: webserver_network
+      # END inline docker-compose.yml
+  register: output
 
 - name: Print docker-compose output
   debug:
     var: output
 
-- name: Pause for 3 minutes to allow database to start fully even on a slow system
+- name: Pause for 3 minutes to allow database to start fully (should suffice even on a slow system)
   pause:
     minutes: 3
 ...

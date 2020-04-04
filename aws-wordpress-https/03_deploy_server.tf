@@ -49,8 +49,13 @@ resource "aws_instance" "instance_cloud-quickstart-wp" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/ubuntu-docker/playbook.yml"
   }
 
-  # Set up with the specific playbook for this host
+  # Set up NGINX reverse proxy
   provisioner "local-exec" {
-    command = "sleep 60 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/wordpress/playbook.yml"
+    command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/nginx-proxy/playbook.yml"
+  }
+
+  # Set up Wordpress
+  provisioner "local-exec" {
+    command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/wordpress/playbook.yml"
   }
 }
