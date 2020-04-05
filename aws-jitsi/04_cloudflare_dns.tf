@@ -1,6 +1,6 @@
 variable "cloudflare_zone_id" {
-  // darkwebkittens.xyz
-  default = "bcf2464ea80f6c630b5eb08cac4feba8"
+  // alexhaydock.co.uk
+  default = "86166f80c7b6d612b9807edbdecd9eb0"
 }
 
 // create A record for server

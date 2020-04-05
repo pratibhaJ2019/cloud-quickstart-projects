@@ -25,4 +25,4 @@ destroy:
 	terraform destroy
 
 ssh:
-	ssh ubuntu@jitsi.darkwebkittens.xyz -i ~/.ssh/id_rsa_AWS
+	ssh ubuntu@jitsi.alexhaydock.co.uk -i ~/.ssh/id_rsa_AWS
