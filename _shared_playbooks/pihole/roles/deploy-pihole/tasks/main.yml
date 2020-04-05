@@ -23,6 +23,8 @@
     repo: https://github.com/TuxInvader/nginx-dns.git
     dest: ~/pihole/nginx-dns
     clone: true
+  tags:
+    - skip_ansible_lint
 
 ### START PIHOLE
 - name: Start NGINX ➡️  Pi-Hole ➡️  Unbound compose stack
