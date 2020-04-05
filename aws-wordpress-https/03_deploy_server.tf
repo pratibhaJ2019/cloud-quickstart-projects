@@ -26,7 +26,7 @@ resource "aws_instance" "instance_cloud-quickstart-wp" {
   # Assign the SSH key we defined earlier to this instance
   key_name = "key_cloud-quickstart-wp"
   tags = {
-    Name = "cloud-quickstart-wordpress"
+    Name = "wordpress-cloud-quickstart"
   }
   security_groups = ["sg_cloud-quickstart-wp"]
 

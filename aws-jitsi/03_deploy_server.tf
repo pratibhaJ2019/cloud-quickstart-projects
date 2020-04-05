@@ -26,7 +26,7 @@ resource "aws_instance" "instance_cloud-quickstart-jitsi" {
   # Assign the SSH key we defined earlier to this instance
   key_name = "key_cloud-quickstart-jitsi"
   tags = {
-    Name = "cloud-quickstart-wordpress"
+    Name = "jitsi-cloud-quickstart"
   }
   security_groups = ["sg_cloud-quickstart-jitsi"]
 

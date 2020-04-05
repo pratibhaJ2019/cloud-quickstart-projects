@@ -4,7 +4,7 @@ variable "instance_username" {
 }
 
 resource "google_compute_instance" "default" {
-  name         = "wordpress-cloud-quickstart"
+  name         = "pihole-cloud-quickstart"
   # f1-micro is the only instance type falling within GCP Free Tier
   machine_type = "f1-micro"
 
