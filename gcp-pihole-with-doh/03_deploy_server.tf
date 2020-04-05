@@ -10,7 +10,7 @@ resource "google_compute_instance" "default" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-1910"
+      image = "ubuntu-1804-lts"
     }
   }
 
