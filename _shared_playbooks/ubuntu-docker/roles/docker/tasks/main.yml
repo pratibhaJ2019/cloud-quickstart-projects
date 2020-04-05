@@ -7,6 +7,8 @@
       - python3-pip
     update_cache: true
     state: present
+  tags:
+    - docker
 
 - name: Install Pips for managing Docker
   become: true
@@ -15,4 +17,6 @@
       - docker
       - docker-compose
     state: present
+  tags:
+    - docker
 ...
