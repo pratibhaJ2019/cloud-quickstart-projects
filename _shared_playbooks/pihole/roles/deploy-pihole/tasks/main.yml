@@ -14,7 +14,7 @@
     - regex.list
 
 - name: Copy nginx.conf
-  copy:
+  template:
     src: nginx-public-resolver.conf
     dest: ~/pihole/nginx-public-resolver.conf
 
