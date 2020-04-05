@@ -1,0 +1,123 @@
+---
+### COPY PIHOLE CONFIG
+- name: Create dir for Pi-Hole config
+  file:
+    path: ~/pihole/etc-pihole
+    state: directory
+
+- name: Copy my custom Pi-Hole blocklists
+  copy:
+    src: "{{ item }}"
+    dest: ~/pihole/etc-pihole/{{ item }}
+  with_items:
+    - adlists.list
+    - regex.list
+
+- name: Copy nginx.conf
+  copy:
+    src: nginx-public-resolver.conf
+    dest: ~/pihole/nginx-public-resolver.conf
+
+- name: Git checkout the Nginx javascript code that translates DoH syntax into what we need (we refer to this in nginx.conf)
+  git:
+    repo: https://github.com/TuxInvader/nginx-dns.git
+    dest: ~/pihole/nginx-dns
+    clone: true
+
+### START PIHOLE
+- name: Start NGINX ➡️  Pi-Hole ➡️  Unbound compose stack
+  become: true
+  docker_compose:
+    project_name: pihole
+    definition:
+      # BEGIN inline docker-compose.yml
+      version: "3.7"
+      services:
+        # Recursive Unbound resolver
+        unbound:
+          container_name: unbound
+          image: klutchell/unbound:latest
+          hostname: unbound.darkwebkittens.xyz
+          expose:
+            # DNS
+            - "5053/tcp"
+            - "5053/udp"
+          restart: unless-stopped
+          networks:
+            pihole_net:
+              ipv4_address: 10.0.0.2
+              ipv6_address: 2001:3200:3200::20
+
+        pihole:
+          image: pihole/pihole:latest
+          container_name: pihole
+          hostname: pihole.darkwebkittens.xyz
+          depends_on:
+            - unbound
+          ports:
+            # Listen globally for DNS queries
+            # This makes it easier for us to deal with WireGuard setup, rather than listening on 127.0.0.1 which doesn't work
+            # Obvious caveat is that we need to actually firewall this port, but I'm letting Amazon Security Groups handle that
+            - "0.0.0.0:53:53/tcp"
+            - "0.0.0.0:53:53/udp"
+            # Access Pi-Hole WebUI locally with: 'ssh ubuntu@vpn.darkwebkittens.xyz -L 3141:127.0.0.1:3141'
+            - "127.0.0.1:3141:3141/tcp"
+          environment:
+            TZ: 'Europe/London'
+            WEBPASSWORD: 'correct-horse-battery-staple'
+            DNS1: '10.0.0.2#5053'
+            DNS2: 'no'
+            # We don't want this since Unbound handles DNSSEC further upstream.
+            DNSSEC: 'false'
+            DNSMASQ_LISTENING: 'all'
+            IPv6: 'true'
+            # The two ENV vars below are needed to stop the WebUI breaking when we use it on a port other than the default (:80)
+            VIRTUAL_HOST: '127.0.0.1:3141'
+            WEB_PORT: '3141'
+          dns:
+            - 127.0.0.1
+            - 1.1.1.1
+          volumes:
+            - '/home/{{ ansible_user }}/pihole/etc-pihole/:/etc/pihole/'
+            - '/home/{{ ansible_user }}/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+          restart: unless-stopped
+          networks:
+            pihole_net:
+              ipv4_address: 10.0.0.3
+              ipv6_address: 2001:3200:3200::30
+
+        nginx-doh-public:
+          image: nginx:stable-alpine
+          container_name: nginx-doh
+          hostname: "{{ __domain_name }}"
+          depends_on:
+            - unbound
+            - pihole
+          volumes:
+            - '/home/{{ ansible_user }}/certs/:/certs/:ro'
+            - '/home/{{ ansible_user }}/pihole/nginx-public-resolver.conf:/etc/nginx/nginx.conf:ro'
+            # git clone https://github.com/TuxInvader/nginx-dns.git /home/ubuntu/compose/nginx-dns
+            - '/home/{{ ansible_user }}/pihole/nginx-dns/njs.d:/etc/nginx/njs.d:ro'
+          ports:
+            - "0.0.0.0:443:443/tcp"
+          restart: unless-stopped
+          networks:
+            pihole_net:
+              ipv4_address: 10.0.0.4
+              ipv6_address: 2001:3200:3200::40
+
+      networks:
+        pihole_net:
+          name: pihole_network
+          driver: bridge
+          ipam:
+            config:
+              - subnet: 10.0.0.0/24
+              - subnet: 2001:3200:3200::/64
+      # END inline docker-compose.yml
+  register: output
+
+- name: Print docker-compose output
+  debug:
+    var: output
+...

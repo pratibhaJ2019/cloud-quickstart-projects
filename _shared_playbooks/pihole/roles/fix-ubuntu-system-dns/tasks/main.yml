@@ -1,0 +1,30 @@
+---
+- name: Edit resolved.conf to disable the systemd-resolved stub resolver
+  become: true
+  lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: '#?DNSStubListener=yes'
+    line: DNSStubListener=no
+
+- name: Remove the old /etc/resolv.conf symlink
+  become: true
+  file:
+    path: /etc/resolv.conf
+    state: absent
+
+- name: Symlink /etc/resolv.conf to the right config now that we've disabled the stub resolver
+  become: true
+  file:
+    src: /run/systemd/resolve/resolv.conf
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    state: link
+
+- name: Restart systemd-resolved (and issue daemon-reload to pick up config changes)
+  become: true
+  systemd:
+    state: restarted
+    daemon_reload: true
+    name: systemd-resolved
+...

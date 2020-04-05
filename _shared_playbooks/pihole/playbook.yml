@@ -1,0 +1,14 @@
+---
+- hosts: all
+  name: Pi-Hole
+  gather_facts: true
+  vars:
+    __domain_name: "{{ lookup('env','TF_VAR_DESIRED_HOSTNAME') }}.darkwebkittens.xyz"
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - fix-ubuntu-system-dns
+    - add-sshfp-record
+    - acme-tls-cert
+    - deploy-pihole
+...
