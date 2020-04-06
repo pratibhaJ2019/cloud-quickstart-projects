@@ -1,0 +1,36 @@
+---
+- name: Start Splunk
+  become: true
+  docker_compose:
+    project_name: so1
+    definition:
+      # BEGIN inline docker-compose.yml
+      version: "3.7"
+      services:
+        splunk:
+          image: splunk/splunk:latest
+          container_name: so1
+          environment:
+            SPLUNK_START_ARGS: "--accept-license"
+            SPLUNK_PASSWORD: "correcthorsebatterystaple"
+            # This is the port the HTTP Event Collector uses by default
+            VIRTUAL_PORT: "8088"
+            VIRTUAL_HOST: "{{ __domain_name }}"
+            LETSENCRYPT_HOST: "{{ __domain_name }}"
+          ports:
+            # Publish port 8000. We're not allowing access to it through the Security Group, but
+            # Without doing this we end up with problems with the playbook
+            # that runs inside the container and provisions Splunk.
+            - "8000:8000/tcp"
+          networks:
+            - webserver-net
+      networks:
+        webserver-net:
+          name: webserver_network
+      # END inline docker-compose.yml
+  register: output
+
+- name: Print docker-compose output
+  debug:
+    var: output
+...

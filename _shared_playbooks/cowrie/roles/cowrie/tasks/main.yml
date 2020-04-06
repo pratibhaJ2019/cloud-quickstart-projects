@@ -1,4 +1,10 @@
 ---
+- name: Copy Splunk config (if this fails you probably don't have the right env vars set. See README.md)
+  become: true
+  template:
+    src: cowrie.cfg
+    dest: /opt/cowrie.cfg
+
 - name: Start the Cowrie SSH honeypot
   become: true
   docker_container:
@@ -8,4 +14,6 @@
     auto_remove: true
     published_ports:
       - "22:2222/tcp"
+    volumes:
+      - "/opt/cowrie.cfg:/cowrie/cowrie-git/etc/cowrie.cfg:ro"
 ...

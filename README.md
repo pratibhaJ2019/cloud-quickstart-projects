@@ -30,6 +30,8 @@ And these are all tweakable, obviously, but I use my shell `rc` files to export 
 * `GOOGLE_ZONE`
 
 ### Usage
+These plans and playbooks are intended to give a super quick jumping off point to start deploy web services and similar tools using cloud providers. They're designed to be relatively secure by default but will definitely need some tweaking for production rather than ephemeral use.
+
 These are for my own use rather than public use, but feel free to use them and build on them where you desire. Most of them are specced to run on the free instances provided by the cloud provider in question (Though some will be a challenge - Wordpress' DB isn't happy and sometimes randomly quits on the measly 600MB RAM we get on a GCP `f1-micro` instance, for example).
 
 Most projects can be initialised by entering the Terraform Plan directory inside this directory and using:
