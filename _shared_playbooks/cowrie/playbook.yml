@@ -1,0 +1,11 @@
+---
+- hosts: all
+  name: Cowrie SSH honeypot
+  gather_facts: true
+  vars:
+    __domain_name: "{{ lookup('env','TF_VAR_DESIRED_HOSTNAME') }}.darkwebkittens.xyz"
+    ansible_python_interpreter: "/usr/bin/python3"
+
+  roles:
+    - cowrie
+...

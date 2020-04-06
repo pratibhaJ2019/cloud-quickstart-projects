@@ -1,0 +1,11 @@
+---
+- name: Start the Cowrie SSH honeypot
+  become: true
+  docker_container:
+    name: cowrie
+    image: cowrie/cowrie:latest
+    state: started
+    auto_remove: true
+    published_ports:
+      - "22:2222/tcp"
+...
