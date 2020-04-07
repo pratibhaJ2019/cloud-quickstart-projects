@@ -1,0 +1,10 @@
+---
+- hosts: all
+  name: Set DNS records for this host
+  gather_facts: true
+
+  roles:
+    - A-records
+    - AAAA-records
+    - SSHFP-record
+...

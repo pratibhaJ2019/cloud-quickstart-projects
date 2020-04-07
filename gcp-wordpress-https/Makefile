@@ -4,25 +4,13 @@ init:
 	terraform init
 
 plan:
-	export TF_VAR_GCP_PUBKEY="~/.ssh/id_ed25519_GCP.pub" && \
-	export TF_VAR_GCP_PRIVKEY="~/.ssh/id_ed25519_GCP" && \
-	export TF_VAR_MY_PUBLIC_IP="$(shell curl --silent -4 http://ipecho.net/plain)/32" && \
-	export TF_VAR_DESIRED_HOSTNAME="gcp01" && \
-	terraform plan
+	../terraform_wrapper.sh --plan
 
 apply:
-	export TF_VAR_GCP_PUBKEY="~/.ssh/id_ed25519_GCP.pub" && \
-	export TF_VAR_GCP_PRIVKEY="~/.ssh/id_ed25519_GCP" && \
-	export TF_VAR_MY_PUBLIC_IP="$(shell curl --silent -4 http://ipecho.net/plain)/32" && \
-	export TF_VAR_DESIRED_HOSTNAME="gcp01" && \
-	terraform apply
+	../terraform_wrapper.sh --apply
 
 destroy:
-	export TF_VAR_GCP_PUBKEY="~/.ssh/id_ed25519_GCP.pub" && \
-	export TF_VAR_GCP_PRIVKEY="~/.ssh/id_ed25519_GCP" && \
-	export TF_VAR_MY_PUBLIC_IP="$(shell curl --silent -4 http://ipecho.net/plain)/32" && \
-	export TF_VAR_DESIRED_HOSTNAME="gcp01" && \
-	terraform destroy
+	../terraform_wrapper.sh --destroy
 
 ssh:
-	ssh ubuntu@gcp01.darkwebkittens.xyz -i ~/.ssh/id_ed25519_GCP
+	ssh ubuntu@wp02.darkwebkittens.xyz -i ~/.ssh/id_ed25519_GCP

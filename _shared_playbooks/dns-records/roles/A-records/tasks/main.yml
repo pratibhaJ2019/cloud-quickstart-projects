@@ -1,0 +1,21 @@
+---
+- name: Remove previous A records for this subdomain
+  cloudflare_dns:
+    zone: "{{ __domain }}"
+    record: "{{ __hostname }}"
+    type: A
+    account_email: "{{ lookup('env','CLOUDFLARE_EMAIL') }}"
+    account_api_token: "{{ lookup('env','CLOUDFLARE_API_KEY') }}"
+    state: absent
+
+# TODO: We can definitely do better than this for IPv4 address discovery. "ip route"?
+- name: Create an A record for the IPv4 address we're SSH'd into with Ansible
+  cloudflare_dns:
+    zone: "{{ __domain }}"
+    record: "{{ __hostname }}"
+    type: A
+    ttl: 120
+    account_email: "{{ lookup('env','CLOUDFLARE_EMAIL') }}"
+    account_api_token: "{{ lookup('env','CLOUDFLARE_API_KEY') }}"
+    value: "{{ inventory_hostname }}"
+...

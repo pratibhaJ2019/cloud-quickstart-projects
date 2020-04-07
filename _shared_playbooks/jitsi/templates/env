@@ -15,7 +15,7 @@ HTTPS_PORT=443
 TZ=Europe/London
 
 # Public URL for the web service
-PUBLIC_URL={{ __domain_name }}
+PUBLIC_URL={{ __fqdn }}
 
 # IP address of the Docker host 
 # See the "Running behind NAT or on a LAN environment" section in the README
@@ -30,7 +30,7 @@ PUBLIC_URL={{ __domain_name }}
 ENABLE_LETSENCRYPT=1
 
 # Domain for which to generate the certificate
-LETSENCRYPT_DOMAIN={{ __domain_name }}
+LETSENCRYPT_DOMAIN={{ __fqdn }}
 
 # E-Mail for receiving important account notifications (mandatory)
 LETSENCRYPT_EMAIL=alex@alexhaydock.co.uk

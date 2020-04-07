@@ -49,6 +49,11 @@ resource "aws_instance" "instance_cloud-quickstart-jitsi" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/ubuntu-docker/playbook.yml"
   }
 
+  # Set up DNS records for this host (runs on localhost, using our local env vars for Cloudflare API access)
+  provisioner "local-exec" {
+    command = "sleep 60 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/dns-records/playbook.yml"
+  }
+
   # Set up with the specific playbook for this host
   provisioner "local-exec" {
     command = "sleep 60 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.AWS_PRIVKEY}' -i '${self.public_ip},' ../_shared_playbooks/jitsi/playbook.yml"

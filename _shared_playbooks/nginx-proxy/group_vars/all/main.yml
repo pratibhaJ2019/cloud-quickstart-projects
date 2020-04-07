@@ -1,0 +1,7 @@
+---
+__hostname: "{{ lookup('env','TF_VAR_DESIRED_HOSTNAME') }}"
+__domain: "{{ lookup('env','TF_VAR_DOMAIN_NAME') }}"
+__fqdn: "{{ lookup('env','TF_VAR_FQDN') }}"
+__letsencrypt_email: "{{ lookup('env','TF_VAR_LETSENCRYPT_EMAIL') }}"
+ansible_python_interpreter: "/usr/bin/python3"
+...
