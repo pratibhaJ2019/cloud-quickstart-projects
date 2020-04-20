@@ -5,10 +5,11 @@
     path: ~/pihole/etc-pihole
     state: directory
 
-- name: Copy my custom Pi-Hole blocklists
-  copy:
-    src: "{{ item }}"
-    dest: ~/pihole/etc-pihole/{{ item }}
+- name: Download my custom Pi-Hole blacklists
+  get_url:
+    url: "https://gitlab.com/alexhaydock/pihole-lists/-/raw/master/{{ item }}"
+    dest: "~/pihole/etc-pihole/{{ item }}"
+    mode: '0644'
   with_items:
     - adlists.list
     - regex.list
