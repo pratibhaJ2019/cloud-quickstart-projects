@@ -3,8 +3,11 @@
   name: Pi-Hole
   gather_facts: true
 
+
   roles:
-    - fix-ubuntu-system-dns
+    - role: fix-ubuntu-system-dns
+      when: ansible_distribution == "Ubuntu"
+
     - add-sshfp-record
     - acme-tls-cert
     - deploy-pihole

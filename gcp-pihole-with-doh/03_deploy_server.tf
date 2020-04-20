@@ -10,7 +10,8 @@ resource "google_compute_instance" "default" {
 
   boot_disk {
     initialize_params {
-      image = "ubuntu-1804-lts"
+      # Boost this to CentOS 8 when it is officially supported by Docker
+      image = "centos-7"
     }
   }
 
@@ -53,7 +54,7 @@ resource "google_compute_instance" "default" {
 
   # Set up the host with a shared playbook
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/ubuntu-docker/playbook.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/centos-docker/playbook.yml"
   }
 
   # Set up NGINX reverse proxy

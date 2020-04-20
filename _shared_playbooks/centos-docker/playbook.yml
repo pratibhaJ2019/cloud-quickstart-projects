@@ -1,0 +1,24 @@
+---
+- hosts: all
+  name: Docker on CentOS
+  gather_facts: true
+
+  pre_tasks:
+    - name: Show kernel version
+      command: uname -a
+      register: kernelver
+      changed_when: false
+    - debug: msg="{{ kernelver.stdout }}"
+
+  roles:
+    - packages
+    - docker
+    - reboot
+
+  post_tasks:
+    - name: Show kernel version
+      command: uname -a
+      register: kernelver
+      changed_when: false
+    - debug: msg="{{ kernelver.stdout }}"
+...

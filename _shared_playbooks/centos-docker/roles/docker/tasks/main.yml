@@ -1,0 +1,33 @@
+---
+- name: Add the Docker CE Repo
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable
+    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: true
+    enabled: true
+  tags:
+    - docker
+
+- name: Install Docker & Pip
+  become: true
+  dnf:
+    name:
+      - docker-ce
+      - python3-pip
+    update_cache: true
+    state: present
+  tags:
+    - docker
+
+- name: Install Pips for managing Docker
+  become: true
+  pip:
+    name:
+      - docker
+      - docker-compose
+    state: present
+  tags:
+    - docker
+...
