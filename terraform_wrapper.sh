@@ -12,6 +12,8 @@ export TF_VAR_FQDN="$desired_hostname.$desired_domainname"
 export TF_VAR_LETSENCRYPT_EMAIL="$letsencrypt_email"
 export TF_VAR_AWS_PUBKEY="$ssh_pubkey_location"
 export TF_VAR_AWS_PRIVKEY="$ssh_privkey_location"
+export TF_VAR_GCP_PUBKEY="$ssh_pubkey_location"
+export TF_VAR_GCP_PRIVKEY="$ssh_privkey_location"
 
 export TF_VAR_MY_PUBLIC_IP="$(curl --silent -4 http://ipecho.net/plain)/32"
 
