@@ -19,7 +19,7 @@
     auto_remove: true
     volumes:
       - "/home/{{ ansible_user }}/certs:/acme.sh"
-    command: "--issue --dns dns_cf -d {{ __domain_name }}"
+    command: "--issue --dns dns_cf -d {{ __hostname }}.{{ __domain }}"
 
 - name: Create a root cronjob to run at 4 AM to renew cert
   become: true

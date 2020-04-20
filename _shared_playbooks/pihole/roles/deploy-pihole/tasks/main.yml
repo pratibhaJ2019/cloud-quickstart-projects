@@ -40,7 +40,7 @@
         unbound:
           container_name: unbound
           image: klutchell/unbound:latest
-          hostname: unbound.darkwebkittens.xyz
+          hostname: "unbound.{{ __domain }}"
           expose:
             # DNS
             - "5053/tcp"
@@ -54,7 +54,7 @@
         pihole:
           image: pihole/pihole:latest
           container_name: pihole
-          hostname: pihole.darkwebkittens.xyz
+          hostname: "pihole.{{ __domain }}"
           depends_on:
             - unbound
           ports:
@@ -63,7 +63,7 @@
             # Obvious caveat is that we need to actually firewall this port, but I'm letting Amazon Security Groups handle that
             - "0.0.0.0:53:53/tcp"
             - "0.0.0.0:53:53/udp"
-            # Access Pi-Hole WebUI locally with: 'ssh ubuntu@vpn.darkwebkittens.xyz -L 3141:127.0.0.1:3141'
+            # Access Pi-Hole WebUI locally with: 'ssh ubuntu@dns.darkwebkittens.xyz -L 3141:127.0.0.1:3141'
             - "127.0.0.1:3141:3141/tcp"
           environment:
             TZ: 'Europe/London'
@@ -92,7 +92,7 @@
         nginx-doh-public:
           image: nginx:stable-alpine
           container_name: nginx-doh
-          hostname: "{{ __domain_name }}"
+          hostname: "{{ __hostname }}.{{ __domain }}"
           depends_on:
             - unbound
             - pihole

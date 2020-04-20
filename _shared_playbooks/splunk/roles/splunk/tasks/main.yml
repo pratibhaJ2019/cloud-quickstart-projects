@@ -15,8 +15,8 @@
             SPLUNK_PASSWORD: "correcthorsebatterystaple"
             # This is the port the HTTP Event Collector uses by default
             VIRTUAL_PORT: "8088"
-            VIRTUAL_HOST: "{{ __domain_name }}"
-            LETSENCRYPT_HOST: "{{ __domain_name }}"
+            VIRTUAL_HOST: "{{ __hostname }}.{{ __domain }}"
+            LETSENCRYPT_HOST: "{{ __hostname }}.{{ __domain }}"
           ports:
             # Publish port 8000. We're not allowing access to it through the Security Group, but
             # Without doing this we end up with problems with the playbook
