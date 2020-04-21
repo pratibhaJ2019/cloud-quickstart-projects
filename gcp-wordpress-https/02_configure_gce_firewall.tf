@@ -30,3 +30,16 @@ resource "google_compute_firewall" "fw-cloud-wp-web" {
     ports    = ["80", "443"]
   }
 }
+
+// Block common malware spreading ports with egress rules
+resource "google_compute_firewall" "fw-cloud-wp-egress-filter" {
+  name    = "fw-cloud-wp-egress-filter"
+  network = google_compute_network.default.name
+  
+  direction = "EGRESS"
+
+  deny {
+    protocol = "tcp"
+    ports    = ["69", "135", "137-139", "161-162", "445", "514", "6660-6669"]
+  }
+}
