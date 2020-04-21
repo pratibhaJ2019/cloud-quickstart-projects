@@ -117,7 +117,6 @@
             config:
               - subnet: 10.0.0.0/24
               - subnet: 2001:3200:3200::/64
-      # END inline docker-compose.yml
   register: output
 
 - name: Print docker-compose output

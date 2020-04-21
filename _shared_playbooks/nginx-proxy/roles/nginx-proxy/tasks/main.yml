@@ -45,7 +45,6 @@
       networks:
         webserver-net:
           name: webserver_network
-      # END inline docker-compose.yml
   register: output
 
 - name: Print docker-compose output
