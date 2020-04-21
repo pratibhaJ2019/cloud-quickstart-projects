@@ -1,6 +1,6 @@
 #!/bin/sh
 
-desired_hostname="dns"
+desired_hostname="dns01"
 desired_domainname="darkwebkittens.xyz"
 
 letsencrypt_email="alex@alexhaydock.co.uk"
