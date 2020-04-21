@@ -1,5 +1,6 @@
 ---
 - name: Add the Docker CE Repo
+  become: true
   yum_repository:
     name: docker-ce-stable
     description: Docker CE Stable
@@ -10,9 +11,9 @@
   tags:
     - docker
 
-- name: Install Docker & Pip
+- name: Install Docker, and Pip3
   become: true
-  dnf:
+  yum:
     name:
       - docker-ce
       - python3-pip
@@ -21,13 +22,32 @@
   tags:
     - docker
 
-- name: Install Pips for managing Docker
+- name: Enable Docker service
+  become: true
+  systemd:
+    name: docker
+    enabled: true
+  tags:
+    - docker
+
+- name: Update Pip
+  become: true
+  pip:
+    name: pip
+    state: latest
+    executable: pip3
+  tags:
+    - docker
+    - skip_ansible_lint
+
+- name: Install Python libraries for managing Docker (via Pip3)
   become: true
   pip:
     name:
       - docker
       - docker-compose
     state: present
+    executable: pip3
   tags:
     - docker
 ...
