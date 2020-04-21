@@ -84,8 +84,7 @@
             - 1.1.1.1
           volumes:
             # Using :Z because the content is not shared between containers
-            - '/home/{{ ansible_user }}/pihole/etc-pihole/adlists.list:/etc/pihole/adlists.list:Z'
-            - '/home/{{ ansible_user }}/pihole/etc-pihole/regex.list:/etc/pihole/regex.list:Z'
+            - '/home/{{ ansible_user }}/pihole/etc-pihole/:/etc/pihole/:Z'
           restart: unless-stopped
           networks:
             pihole_net:
