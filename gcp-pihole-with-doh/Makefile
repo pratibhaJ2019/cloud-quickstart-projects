@@ -13,4 +13,4 @@ destroy:
 	../terraform_wrapper.sh --destroy
 
 ssh:
-	ssh ubuntu@dns.darkwebkittens.xyz -i ~/.ssh/id_ed25519_GCP -L 3141:127.0.0.1:3141 -o VerifyHostKeyDNS=true
+	ssh centos@dns.darkwebkittens.xyz -i ~/.ssh/id_ed25519_GCP -L 3141:127.0.0.1:3141 -o VerifyHostKeyDNS=true

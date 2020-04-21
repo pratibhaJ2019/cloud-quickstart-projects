@@ -1,6 +1,6 @@
 variable "instance_username" {
   type    = string
-  default = "ubuntu"
+  default = "centos"
 }
 
 resource "google_compute_instance" "default" {
@@ -54,7 +54,7 @@ resource "google_compute_instance" "default" {
 
   # Set up the host with a shared playbook
   provisioner "local-exec" {
-    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/centos-docker/playbook.yml"
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/centos7-docker/playbook.yml"
   }
 
   # Set up NGINX reverse proxy
