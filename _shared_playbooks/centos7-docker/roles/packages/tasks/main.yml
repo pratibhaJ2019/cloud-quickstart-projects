@@ -1,10 +1,10 @@
 ---
 - name: Enable CentOS "Continuous Release" repo if we're not yet on CentOS 7.8 (we need the new libselinux-python3 package)
   become: true
-  ini_file:      
-    dest: /etc/yum.repos.d/CentOS-CR.repo       
-    section: cr      
-    option: enabled       
+  ini_file:
+    dest: /etc/yum.repos.d/CentOS-CR.repo
+    section: cr
+    option: enabled
     value: "1"
   when:
     - ansible_distribution == "CentOS"
