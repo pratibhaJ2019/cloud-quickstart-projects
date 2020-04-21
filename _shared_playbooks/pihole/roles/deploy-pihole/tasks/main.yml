@@ -80,8 +80,9 @@
             - 127.0.0.1
             - 1.1.1.1
           volumes:
-            - '/home/{{ ansible_user }}/pihole/etc-pihole/:/etc/pihole/'
-            - '/home/{{ ansible_user }}/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+            # Using :Z because the content is not shared between containers
+            - '/home/{{ ansible_user }}/pihole/etc-pihole/adlists.list:/etc/pihole/adlists.list:Z'
+            - '/home/{{ ansible_user }}/pihole/etc-pihole/regex.list:/etc/pihole/regex.list:Z'
           restart: unless-stopped
           networks:
             pihole_net:
@@ -95,10 +96,11 @@
             - unbound
             - pihole
           volumes:
-            - '/home/{{ ansible_user }}/certs/:/certs/:ro'
-            - '/home/{{ ansible_user }}/pihole/nginx-public-resolver.conf:/etc/nginx/nginx.conf:ro'
+            # Lowercase :z is for content shared with acme.sh container. Uppercase :Z is for not-shared content.
+            - '/home/{{ ansible_user }}/certs/:/certs/:z'
+            - '/home/{{ ansible_user }}/pihole/nginx-public-resolver.conf:/etc/nginx/nginx.conf:Z'
             # git clone https://github.com/TuxInvader/nginx-dns.git /home/ubuntu/compose/nginx-dns
-            - '/home/{{ ansible_user }}/pihole/nginx-dns/njs.d:/etc/nginx/njs.d:ro'
+            - '/home/{{ ansible_user }}/pihole/nginx-dns/njs.d:/etc/nginx/njs.d:Z'
           ports:
             - "0.0.0.0:443:443/tcp"
           restart: unless-stopped

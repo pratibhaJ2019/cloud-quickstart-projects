@@ -18,7 +18,8 @@
     state: started
     auto_remove: true
     volumes:
-      - "/home/{{ ansible_user }}/certs:/acme.sh"
+      # Lowercase :z because this content will be shared with the NGINX container
+      - "/home/{{ ansible_user }}/certs:/acme.sh:z"
     command: "--issue --dns dns_cf -d {{ __hostname }}.{{ __domain }}"
 
 - name: Create a root cronjob to run at 4 AM to renew cert
@@ -27,7 +28,7 @@
     name: "Renew cert"
     minute: "0"
     hour: "4"
-    job: 'docker run --rm -it -v "/home/{{ ansible_user }}/certs":"/acme.sh" neilpang/acme.sh --cron'
+    job: 'docker run --rm -it -v "/home/{{ ansible_user }}/certs":"/acme.sh":"z" neilpang/acme.sh --cron'
 
-# We'll probably also need a cronjob to run after that to reload the Nginx config to actually pick up the new cert if we have one
+# TODO: We'll probably also need a cronjob to restart NGINX after the cert has been regenerated.
 ...
