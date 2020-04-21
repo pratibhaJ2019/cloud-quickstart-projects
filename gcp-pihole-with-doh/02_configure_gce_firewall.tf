@@ -42,4 +42,9 @@ resource "google_compute_firewall" "fw-cloud-pihole-egress-filter" {
     protocol = "tcp"
     ports    = ["69", "135", "137-139", "161-162", "445", "514", "6660-6669"]
   }
+
+  deny {
+    protocol = "udp"
+    ports    = ["69", "135", "137-139", "161-162", "445", "514", "6660-6669"]
+  }
 }
