@@ -17,8 +17,11 @@ export TF_VAR_GCP_PRIVKEY="$ssh_privkey_location"
 
 export TF_VAR_MY_PUBLIC_IP="$(curl --silent -4 http://ipecho.net/plain)/32"
 
-# if no command line arg given
-# set rental to Unknown
+# Set some Ansible env vars
+export ANSIBLE_HOST_KEY_CHECKING="False"
+export ANSIBLE_NOCOWS="1" # Disable Cowsay support in Ansible (why, Red Hat?)
+
+# If no argument provided, do not run script
 if [ -z $1 ]
 then
   echo "Please use the Makefile. Do not run this script directly."
