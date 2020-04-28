@@ -1,125 +1,38 @@
 ---
-### COPY PIHOLE CONFIG
-- name: Create dir for Pi-Hole config
+- name: Ensure Pi-Hole config directory exists
   file:
-    path: ~/pihole/etc-pihole
+    path: "/home/{{ ansible_user }}/pihole/"
     state: directory
 
-# These blacklists only work for now since Pi-Hole v5 has an "import" facility which imports
-# configuration and settings from v4 Pi-Hole. But at some point they might stop working, as
-# management by text-based list has been deprecated in v5 and everything is now done with
-# a database-backed model.
-- name: Download my custom Pi-Hole blacklists
-  get_url:
-    url: "https://gitlab.com/alexhaydock/pihole-lists/-/raw/master/{{ item }}"
-    dest: "~/pihole/etc-pihole/{{ item }}"
-    mode: '0644'
-  with_items:
-    - adlists.list
-    - regex.list
-
 - name: Copy nginx.conf
-  template:
+  copy:
     src: nginx-public-resolver.conf
-    dest: ~/pihole/nginx-public-resolver.conf
+    dest: "/home/{{ ansible_user }}/pihole/nginx-public-resolver.conf"
 
 - name: Git checkout the Nginx javascript code that translates DoH syntax into what we need (we refer to this in nginx.conf)
   git:
     repo: https://github.com/TuxInvader/nginx-dns.git
-    dest: ~/pihole/nginx-dns
+    dest: "/home/{{ ansible_user }}/pihole/nginx-dns"
     clone: true
   tags:
-    - skip_ansible_lint
+    - skip_ansible_lint  # Otherwise it complains we haven't checked out a specific branch
 
-### START PIHOLE
-- name: Start NGINX --> Pi-Hole --> Unbound compose stack
+- name: Ensure Pi-Hole compose directory exists
+  file:
+    path: "/home/{{ ansible_user }}/ansible-docker/pihole/"
+    state: directory
+
+- name: Copy Compose file
+  template:
+    src: docker-compose.yml
+    dest: "/home/{{ ansible_user }}/ansible-docker/pihole/docker-compose.yml"
+
+- name: Start Pi-Hole via compose file
   become: true
   docker_compose:
-    project_name: pihole
-    definition:
-      # BEGIN inline docker-compose.yml
-      version: "3.7"
-      services:
-        # Recursive Unbound resolver
-        unbound:
-          container_name: unbound
-          image: klutchell/unbound:latest
-          hostname: "unbound.{{ __domain }}"
-          expose:
-            # DNS
-            - "5053/tcp"
-            - "5053/udp"
-          restart: unless-stopped
-          networks:
-            pihole_net:
-              ipv4_address: 10.0.0.2
-
-        pihole:
-          image: pihole/pihole:beta-v5.0
-          container_name: pihole
-          hostname: "pihole.{{ __domain }}"
-          depends_on:
-            - unbound
-          expose:
-            # Exposing these ports is enough since we're not actually answering plain DNS for anyone other than the upstream NGINX container
-            - "53/tcp"
-            - "53/udp"
-          ports:
-            # Access Pi-Hole WebUI locally with: 'ssh ubuntu@dns.darkwebkittens.xyz -L 3141:127.0.0.1:3141'
-            - "127.0.0.1:3141:3141/tcp"
-          environment:
-            TZ: 'Europe/London'
-            WEBPASSWORD: 'correct-horse-battery-staple'
-            DNS1: '10.0.0.2#5053'
-            DNS2: 'no'
-            # We don't want this since Unbound handles DNSSEC further upstream.
-            DNSSEC: 'false'
-            DNSMASQ_LISTENING: 'all'
-            IPv6: 'true'
-            # The two ENV vars below are needed to stop the WebUI breaking when we use it on a port other than the default (:80)
-            VIRTUAL_HOST: '127.0.0.1:3141'
-            WEB_PORT: '3141'
-          dns:
-            - 127.0.0.1
-            - 1.1.1.1
-          volumes:
-            # Using :Z because the content is not shared between containers
-            - '/home/{{ ansible_user }}/pihole/etc-pihole/:/etc/pihole/:Z'
-          restart: unless-stopped
-          networks:
-            pihole_net:
-              ipv4_address: 10.0.0.3
-
-        nginx-doh-public:
-          image: nginx:stable-alpine
-          container_name: nginx-doh
-          hostname: "{{ __hostname }}.{{ __domain }}"
-          depends_on:
-            - unbound
-            - pihole
-          volumes:
-            # Lowercase :z is for content shared with acme.sh container. Uppercase :Z is for not-shared content.
-            - '/home/{{ ansible_user }}/certs/:/certs/:z'
-            - '/home/{{ ansible_user }}/pihole/nginx-public-resolver.conf:/etc/nginx/nginx.conf:Z'
-            # git clone https://github.com/TuxInvader/nginx-dns.git /home/ubuntu/compose/nginx-dns
-            - '/home/{{ ansible_user }}/pihole/nginx-dns/njs.d:/etc/nginx/njs.d:Z'
-          ports:
-            - "0.0.0.0:443:443/tcp"
-          restart: unless-stopped
-          networks:
-            pihole_net:
-              ipv4_address: 10.0.0.4
-
-      networks:
-        pihole_net:
-          name: pihole_network
-          driver: bridge
-          ipam:
-            config:
-              - subnet: 10.0.0.0/24
-  register: output
-
-- name: Print docker-compose output
-  debug:
-    var: output
+    project_src: "/home/{{ ansible_user }}/ansible-docker/pihole/"
+    pull: true
+    recreate: always
+    remove_orphans: true
+    restarted: true
 ...

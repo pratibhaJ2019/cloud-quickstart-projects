@@ -57,7 +57,12 @@ resource "google_compute_instance" "default" {
     command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/centos7-docker/playbook.yml"
   }
 
-  # Set up NGINX reverse proxy
+  # Set up DNS records for the instance
+  provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/dns-records/playbook.yml"
+  }
+
+  # Set up Pi-Hole
   provisioner "local-exec" {
     command = "sleep 20 && ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u '${var.instance_username}' --private-key '${var.GCP_PRIVKEY}' -i '${self.network_interface.0.access_config.0.nat_ip},' ../_shared_playbooks/pihole/playbook.yml"
   }
