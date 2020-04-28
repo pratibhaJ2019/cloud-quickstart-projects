@@ -3,23 +3,9 @@
   name: Docker on CentOS
   gather_facts: true
 
-  pre_tasks:
-    - name: Show kernel version
-      command: uname -a
-      register: kernelver
-      changed_when: false
-    - debug: msg="{{ kernelver.stdout }}"
-
   roles:
     - packages
     - docker
     - enforce-selinux
     - reboot
-
-  post_tasks:
-    - name: Show kernel version
-      command: uname -a
-      register: kernelver
-      changed_when: false
-    - debug: msg="{{ kernelver.stdout }}"
 ...

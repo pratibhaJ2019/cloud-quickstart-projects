@@ -1,5 +1,5 @@
 ---
-- name: Enable CentOS "Continuous Release" repo if we're not yet on CentOS 7.8 (we need the new libselinux-python3 package)
+- name: Enable CentOS "Continuous Release" repo if we're still on CentOS <7.8 (we need the new libselinux-python3 package)
   become: true
   ini_file:
     dest: /etc/yum.repos.d/CentOS-CR.repo
@@ -28,31 +28,8 @@
 
 - name: Install useful packages (the libselinux-python* packages are needed for Ansible to handle contexts properly in the copy/file module)
   become: true
-  yum:
-    name:
-      - fail2ban
-      - git
-      - libselinux-python
-      - libselinux-python3
+  package:
+    name: [fail2ban, git, libselinux-python, libselinux-python3]
     update_cache: true
     state: present
-
-- name: Reboot box if kernel/libs updated and requested by the system
-  become: true
-  shell: /sbin/shutdown -r now 'Rebooting box to update system libs/kernel as needed'
-  args:
-    removes: /var/run/reboot-required
-  async: 300
-  poll: 0
-  ignore_errors: true
-  changed_when: false
-  register: rebootafterupdates
-  tags:
-    - skip_ansible_lint
-
-- name: Wait 600 seconds for target connection to become reachable/usable
-  wait_for_connection:
-  when: rebootafterupdates.changed
-  tags:
-    - skip_ansible_lint
 ...

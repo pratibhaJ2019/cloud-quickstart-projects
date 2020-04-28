@@ -1,22 +1,10 @@
 ---
-- name: Add the Docker CE Repo
+- name: Install Docker and Pip3
   become: true
-  yum_repository:
-    name: docker-ce-stable
-    description: Docker CE Stable
-    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
-    gpgkey: https://download.docker.com/linux/centos/gpg
-    gpgcheck: true
-    enabled: true
-  tags:
-    - docker
-
-- name: Install Docker, and Pip3
-  become: true
-  yum:
-    name:
-      - docker-ce
-      - python3-pip
+  package:
+    # Install Docker from CentOS repos because it comes with SELinux configured
+    # otherwise we have to mess around with configuring the systemd service files.
+    name: [docker, python3-pip]
     update_cache: true
     state: present
   tags:
@@ -43,11 +31,39 @@
 - name: Install Python libraries for managing Docker (via Pip3)
   become: true
   pip:
-    name:
-      - docker
-      - docker-compose
+    name: [docker, docker-compose]
     state: present
     executable: pip3
+  tags:
+    - docker
+
+- name: Install SELinux management packages
+  become: true
+  package:
+    name: [checkpolicy, policycoreutils, policycoreutils-python]
+    update_cache: true
+    state: present
+  tags:
+    - docker
+
+# SELinux policy generated with:
+#   1. [Try to run the Docker container that needs socket access]
+#   2. sudo ausearch --file 'docker.sock' --raw | audit2allow -M docker-sock-read
+#   3. cat docker-sock-read.pp | /usr/libexec/selinux/hll/pp > docker-sock-read.cil
+#   4. [Audit the CIL file contents for sanity]
+#   5. sudo semodule -i docker-sock-read.cil
+#   6. [Repeat from Step 1 onwards until you've formed a CIL file with all the
+#       necessary policies for your Docker container's socket access to work.]
+- name: Copy SELinux policy to allow read-only Docker Sock access
+  copy:
+    src: docker-sock-read.cil
+    dest: "/tmp/docker-sock-read.cil"
+  tags:
+    - docker
+
+- name: Load SELinux module for read-only Docker-Sock access
+  become: true
+  command: semodule -i /tmp/docker-sock-read.cil
   tags:
     - docker
 ...

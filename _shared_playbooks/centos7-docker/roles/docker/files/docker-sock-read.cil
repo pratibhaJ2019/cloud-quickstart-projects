@@ -1,0 +1,5 @@
+(typeattributeset cil_gen_require container_var_run_t)
+(typeattributeset cil_gen_require container_runtime_t)
+(typeattributeset cil_gen_require container_t)
+(allow container_t container_var_run_t (sock_file (read)))
+(allow container_t container_runtime_t (unix_stream_socket (connectto)))
