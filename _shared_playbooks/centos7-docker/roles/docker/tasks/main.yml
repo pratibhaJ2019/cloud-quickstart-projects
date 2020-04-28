@@ -64,6 +64,7 @@
 - name: Load SELinux module for read-only Docker-Sock access
   become: true
   command: semodule -i /tmp/docker-sock-read.cil
+  changed_when: false
   tags:
     - docker
 ...
